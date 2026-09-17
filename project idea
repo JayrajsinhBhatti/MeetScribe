@@ -1,0 +1,54 @@
+The basic idea of your project is:
+
+A web application that connects with Google Meet and Google Calendar, shows the user's meetings in one place, allows them to join meetings directly, captures the meeting's speech, converts it into text, and then uses AI to organize the meeting content into useful formats such as documents, summaries, and flashcards.
+
+Simple flow
+
+Google Account Authentication
+↓
+Sync Google Calendar + Google Meet meetings
+↓
+Show upcoming/past meetings in your application
+↓
+User clicks "Join Meeting"
+↓
+Meeting happens → capture speech
+↓
+Speech-to-Text
+↓
+AI processes the transcript
+↓
+Organized output
+
+📝 Meeting document / notes
+🧠 Flashcards
+📌 Important points
+✅ Action items
+📋 Summary
+🔑 Key decisions
+Example
+
+Suppose you have a meeting:
+
+"AI Project Discussion — 2:00 PM"
+
+After the meeting, your application could produce:
+
+Summary
+
+Discussed the architecture of the AI chatbot and decided to use RAG for document retrieval.
+
+Action Items
+
+Jayraj → Implement document ingestion
+Person 2 → Prepare embedding pipeline
+Team → Test retrieval accuracy
+
+Flashcards
+
+Q: What architecture was selected for document retrieval?
+A: RAG (Retrieval-Augmented Generation).
+
+Meeting Document
+
+A structured document containing the transcript, summary, decisions, action items, and important discussion points.
