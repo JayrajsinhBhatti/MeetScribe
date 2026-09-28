@@ -47,3 +47,13 @@ System Volume Information/
 .cache/
 tmp/
 scratch/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+.pytest_cache/
+

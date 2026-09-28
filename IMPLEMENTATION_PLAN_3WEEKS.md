@@ -27,76 +27,76 @@
 ### Day 2 — Friday, Sep 19: Database Setup & User Model
 
 - [x] Set up MongoDB Atlas cluster (or local MongoDB)
-- [x] Install and configure Mongoose
-- [x] Create `User` model schema (userId, email, name, tokens, createdAt)
+- [x] Install and configure Motor & Beanie ODM (Python async MongoDB)
+- [x] Create `User` model schema (user_id, email, name, tokens, created_at)
 - [x] Create `Meeting` model schema
 - [x] Create `Transcript` model schema
 - [x] Create `AIOutput` model schema
-- [x] Test database connection and basic CRUD operations
+- [x] Test database connection and basic CRUD operations (`test_db.py`)
 
 ---
 
 ### Day 3 — Saturday, Sep 20: Google OAuth 2.0 Authentication
 
-- [ ] Create Google Cloud Console project and enable OAuth APIs
-- [ ] Configure OAuth consent screen and credentials
-- [ ] Install Passport.js with Google Strategy
-- [ ] Implement `/auth/google` route (initiate OAuth)
-- [ ] Implement `/auth/google/callback` route (handle tokens)
-- [ ] Store access & refresh tokens securely in database
-- [ ] Implement token refresh middleware
-- [ ] Test full login/logout flow with Postman
+- [x] Create Google Cloud Console project and enable OAuth APIs
+- [x] Configure OAuth consent screen and credentials
+- [x] Configure FastAPI OAuth2 with Google Authlib
+- [x] Implement `/api/v1/auth/google/url` route (initiate OAuth)
+- [x] Implement `/api/v1/auth/google/callback` route (handle tokens & JWT)
+- [x] Store access & refresh tokens securely in database
+- [x] Implement token refresh helper / middleware
+- [x] Test full login/logout flow with Postman / Swagger UI
 
 ---
 
 ### Day 4 — Sunday, Sep 21: Google Calendar API Integration
 
-- [ ] Enable Google Calendar API in Cloud Console
-- [ ] Install `googleapis` npm package
-- [ ] Create Calendar service module to fetch events
-- [ ] Implement `/api/calendar/sync` endpoint
-- [ ] Filter events to extract only Google Meet meetings
-- [ ] Parse meeting data (title, time, participants, Meet link)
-- [ ] Save synced meetings to the `Meeting` collection
-- [ ] Handle pagination for users with many calendar events
+- [x] Enable Google Calendar API in Cloud Console
+- [x] Install `google-api-python-client` and `google-auth` packages
+- [x] Create Calendar service module to fetch events
+- [x] Implement `/api/v1/calendar/sync` endpoint
+- [x] Filter events to extract only Google Meet meetings
+- [x] Parse meeting data (title, time, participants, Meet link)
+- [x] Save synced meetings to the `Meeting` collection
+- [x] Handle pagination for users with many calendar events
 
 ---
 
 ### Day 5 — Monday, Sep 22: Meetings API & Backend Middleware
 
-- [ ] Implement `GET /api/meetings` — list all meetings (with pagination, filters)
-- [ ] Implement `GET /api/meetings/:id` — get single meeting details
-- [ ] Add authentication middleware to protect all `/api` routes
-- [ ] Add error handling middleware (centralized error responses)
-- [ ] Add request validation using `express-validator` or `joi`
-- [ ] Implement meeting status logic (upcoming / completed / missed)
-- [ ] Write unit tests for meeting CRUD operations
+- [x] Implement `GET /api/meetings` — list all meetings (with pagination, filters)
+- [x] Implement `GET /api/meetings/:id` — get single meeting details
+- [x] Add authentication middleware to protect all `/api` routes
+- [x] Add error handling middleware (centralized error responses)
+- [x] Add request validation using Pydantic schemas
+- [x] Implement meeting status logic (upcoming / completed / missed)
+- [x] Write unit tests for meeting CRUD operations
 
 ---
 
 ### Day 6 — Tuesday, Sep 23: Frontend Authentication & Routing
 
-- [ ] Install React Router and set up page routing
-- [ ] Create Login page with "Sign in with Google" button
-- [ ] Implement OAuth redirect flow on the frontend
-- [ ] Store auth token (httpOnly cookie or secure localStorage)
-- [ ] Create authenticated route wrapper / protected routes
-- [ ] Set up Axios instance with auth interceptor
-- [ ] Create global auth context (React Context API)
-- [ ] Test end-to-end login flow (frontend ↔ backend)
+- [x] Install React Router and set up page routing
+- [x] Create Login page with "Sign in with Google" button
+- [x] Implement OAuth redirect flow on the frontend
+- [x] Store auth token (httpOnly cookie or secure localStorage)
+- [x] Create authenticated route wrapper / protected routes
+- [x] Set up Axios instance with auth interceptor
+- [x] Create global auth context (React Context API)
+- [x] Test end-to-end login flow (frontend ↔ backend)
 
 ---
 
 ### Day 7 — Wednesday, Sep 24: Meeting Dashboard UI
 
-- [ ] Design and implement the Dashboard layout (sidebar + main content)
-- [ ] Build the meeting list component (upcoming meetings section)
-- [ ] Build the past meetings section with status indicators
-- [ ] Create meeting card component (title, time, participants, join button)
-- [ ] Fetch and display meetings from the API
-- [ ] Add loading states and empty states
-- [ ] Implement auto-sync on dashboard load (trigger calendar sync)
-- [ ] Add responsive design for mobile and tablet views
+- [x] Design and implement the Dashboard layout (sidebar + main content)
+- [x] Build the meeting list component (upcoming meetings section)
+- [x] Build the past meetings section with status indicators
+- [x] Create meeting card component (title, time, participants, join button)
+- [x] Fetch and display meetings from the API
+- [x] Add loading states and empty states
+- [x] Implement auto-sync on dashboard load (trigger calendar sync)
+- [x] Add responsive design for mobile and tablet views
 
 ---
 

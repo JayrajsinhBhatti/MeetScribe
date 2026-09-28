@@ -27,22 +27,20 @@ Repository: [https://github.com/JayrajsinhBhatti/MeetScribe](https://github.com/
 
 ```
 MeetScribe/
-├── backend/                  # Node.js + Express + TypeScript REST API
-│   ├── src/
-│   │   ├── config/           # Database and third-party API configurations
-│   │   ├── controllers/      # Express request handlers
-│   │   ├── middlewares/      # Auth, error handling, validation
-│   │   ├── models/           # Mongoose schemas (User, Meeting, Transcript, AIOutput)
-│   │   ├── routes/           # API route definitions
-│   │   ├── services/         # Calendar, Speech-to-Text, and AI services
-│   │   ├── types/            # TypeScript interface definitions
-│   │   ├── utils/            # Helper utilities and loggers
-│   │   └── index.ts          # Server entry point
+├── backend/                  # FastAPI + Python REST API
+│   ├── app/
+│   │   ├── api/              # API endpoints (v1 routes: auth, meetings, calendar)
+│   │   ├── core/             # Security, JWT, OAuth configuration
+│   │   ├── models/           # Beanie ODM models (User, Meeting, Transcript, AIOutput)
+│   │   ├── schemas/          # Pydantic request/response validation schemas
+│   │   ├── services/         # Business logic (Calendar, Speech-to-Text, AI)
+│   │   ├── config.py         # App configuration via Pydantic BaseSettings
+│   │   ├── database.py       # Motor + Beanie MongoDB connection setup
+│   │   └── main.py           # FastAPI entry point & CORS middleware
 │   ├── .env.example          # Backend environment variable template
-│   ├── .eslintrc.json        # ESLint config
-│   ├── .prettierrc           # Prettier config
-│   ├── package.json
-│   └── tsconfig.json
+│   ├── requirements.txt      # Python dependencies
+│   ├── test_db.py            # MongoDB connection verification script
+│   └── README.md
 │
 ├── frontend/                 # Vite + React + TypeScript Single Page Application
 │   ├── src/
@@ -73,12 +71,12 @@ MeetScribe/
 
 | Layer | Stack |
 |---|---|
-| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS / Vanilla CSS |
-| **Backend** | Node.js (v20+ / v24), Express.js, TypeScript, nodemon |
-| **Database** | MongoDB & Mongoose |
-| **Authentication** | Google OAuth 2.0 (Passport.js) |
+| **Frontend** | React 19, TypeScript, Vite, Vanilla CSS / Tailwind CSS |
+| **Backend** | Python 3.11+, FastAPI, Uvicorn, Pydantic v2 |
+| **Database** | MongoDB & Beanie ODM (Motor async driver) |
+| **Authentication** | Google OAuth 2.0, Authlib, JWT (python-jose) |
 | **APIs & AI** | Google Calendar API v3, Google Cloud Speech-to-Text / Whisper, Google Gemini API / OpenAI GPT-4 |
-| **Code Quality** | ESLint, Prettier, TypeScript strict mode |
+| **Code Quality** | Pydantic strict typing, Pytest |
 
 ---
 
@@ -87,8 +85,8 @@ MeetScribe/
 ### Prerequisites
 
 Ensure you have the following installed on your machine:
-- **Node.js**: v20.x or v24.x
-- **npm**: v10.x or higher
+- **Python**: 3.11+
+- **Node.js**: v20.x or v24.x & **npm**
 - **Git**
 - **MongoDB**: Local instance running on `mongodb://localhost:27017` or a MongoDB Atlas URI
 
@@ -102,34 +100,37 @@ git clone https://github.com/JayrajsinhBhatti/MeetScribe.git
 cd MeetScribe
 ```
 
-#### 2. Backend Setup
+#### 2. Backend Setup (FastAPI + Python)
 ```bash
-# Navigate to backend directory
 cd backend
 
+# Create & activate virtual environment (Windows PowerShell)
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
 # Install dependencies
-npm install
+pip install -r requirements.txt
 
 # Setup environment variables
-cp .env.example .env
+Copy-Item .env.example .env
 
-# Edit .env with your Google OAuth, MongoDB, and AI API keys
 # Run backend development server
-npm run dev
+uvicorn app.main:app --reload --port 5000
 ```
 The backend server runs on `http://localhost:5000` by default.  
-Test health check at `http://localhost:5000/health`.
+- Health check: `http://localhost:5000/health`  
+- Swagger API Docs: `http://localhost:5000/docs`
 
-#### 3. Frontend Setup
+#### 3. Frontend Setup (React + Vite)
+In a separate terminal:
 ```bash
-# Navigate to frontend directory (from project root)
-cd ../frontend
+cd frontend
 
 # Install dependencies
 npm install
 
 # Setup environment variables
-cp .env.example .env
+Copy-Item .env.example .env
 
 # Run frontend development server
 npm run dev
@@ -141,29 +142,22 @@ The frontend dev server will start at `http://localhost:5173`.
 ## 📜 Available Scripts
 
 ### Backend (`/backend`)
-- `npm run dev`: Runs the backend in watch mode using `nodemon` and `ts-node`.
-- `npm run build`: Compiles TypeScript to JavaScript in `/dist`.
-- `npm start`: Runs the compiled production code.
-- `npm run lint`: Runs ESLint to check for code quality issues.
-- `npm run lint:fix`: Automatically fixes ESLint warnings and formatting issues.
-- `npm run format`: Formats source files using Prettier.
+- `uvicorn app.main:app --reload --port 5000`: Starts FastAPI development server with hot reload.
+- `python test_db.py`: Verifies MongoDB connection and Beanie document models.
+- `pytest`: Runs test suite.
 
 ### Frontend (`/frontend`)
 - `npm run dev`: Starts Vite local development server with HMR.
 - `npm run build`: Types-checks and bundles the application for production.
 - `npm run preview`: Locally previews the production build.
 - `npm run lint`: Checks frontend code using ESLint.
-- `npm run lint:fix`: Auto-fixes linting issues.
 - `npm run format`: Formats frontend code using Prettier.
 
 ---
 
 ## 📋 Roadmap & Implementation
 
-Refer to [IMPLEMENTATION_PLAN_3WEEKS.md](IMPLEMENTATION_PLAN_3WEEKS.md) for the complete 21-day task breakdown:
-- **Week 1**: Foundation, OAuth 2.0, Calendar API, Meetings API, and Dashboard UI.
-- **Week 2**: Audio capture, Speech-to-Text streaming, and AI processing prompts/endpoints.
-- **Week 3**: Export (PDF/Markdown/DOCX), sharing, full-text search, UI polish, and cloud deployment.
+Refer to [IMPLEMENTATION_PLAN_3WEEKS.md](IMPLEMENTATION_PLAN_3WEEKS.md) for the complete 21-day task breakdown.
 
 ---
 
