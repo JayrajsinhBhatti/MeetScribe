@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -8,14 +8,19 @@ export const AuthCallback: React.FC = () => {
   const { login } = useAuth();
   const [statusText, setStatusText] = useState('Finalizing Google sign-in...');
   const [error, setError] = useState<string | null>(null);
+  const hasProcessedRef = useRef(false);
 
   useEffect(() => {
+    if (hasProcessedRef.current) return;
+
     const token = searchParams.get('token');
     if (!token) {
       setError('No authentication token received from Google. Redirecting to login...');
       setTimeout(() => navigate('/login', { replace: true }), 2500);
       return;
     }
+
+    hasProcessedRef.current = true;
 
     const processLogin = async () => {
       try {
@@ -24,7 +29,7 @@ export const AuthCallback: React.FC = () => {
         setStatusText('Success! Taking you to your dashboard...');
         setTimeout(() => {
           navigate('/dashboard', { replace: true });
-        }, 800);
+        }, 500);
       } catch (err) {
         console.error('Callback error:', err);
         setError('Authentication failed. Please try signing in again.');

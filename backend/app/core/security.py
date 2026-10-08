@@ -31,7 +31,10 @@ async def get_valid_credentials(user: User) -> Credentials:
         token_uri="https://oauth2.googleapis.com/token",
         client_id=settings.GOOGLE_CLIENT_ID,
         client_secret=settings.GOOGLE_CLIENT_SECRET,
-        scopes=["https://www.googleapis.com/auth/calendar.readonly"],
+        scopes=[
+            "https://www.googleapis.com/auth/calendar.events",
+            "https://www.googleapis.com/auth/calendar.readonly",
+        ],
     )
 
     try:
@@ -59,7 +62,10 @@ async def get_valid_credentials(user: User) -> Credentials:
                     token_uri="https://oauth2.googleapis.com/token",
                     client_id=settings.GOOGLE_CLIENT_ID,
                     client_secret=settings.GOOGLE_CLIENT_SECRET,
-                    scopes=["https://www.googleapis.com/auth/calendar.readonly"],
+                    scopes=[
+                        "https://www.googleapis.com/auth/calendar.events",
+                        "https://www.googleapis.com/auth/calendar.readonly",
+                    ],
                 )
     except Exception as e:
         # Fall back to existing credentials or raise 401 if failed

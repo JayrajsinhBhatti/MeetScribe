@@ -27,6 +27,7 @@ export interface TranscriptSegment {
 export interface ActionItem {
   assignee: string;
   task: string;
+  status?: 'pending' | 'completed';
 }
 
 export interface Flashcard {

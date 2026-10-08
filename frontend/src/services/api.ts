@@ -43,13 +43,14 @@ const FALLBACK_CALLBACK = 'http://localhost:5000/api/v1/auth/google/callback';
 const FALLBACK_AUTH_URL =
   `https://accounts.google.com/o/oauth2/v2/auth?client_id=${FALLBACK_CLIENT_ID}&redirect_uri=${encodeURIComponent(
     FALLBACK_CALLBACK
-  )}&response_type=code&scope=openid%20email%20profile%20https://www.googleapis.com/auth/calendar.readonly&access_type=offline&prompt=consent`;
+  )}&response_type=code&scope=openid%20email%20profile%20https://www.googleapis.com/auth/calendar.events%20https://www.googleapis.com/auth/calendar.readonly&access_type=offline&prompt=consent`;
 
 // Auth Endpoints
 export const authService = {
   getGoogleAuthUrl: async (): Promise<string> => {
     try {
-      const res = await api.get<{ url: string }>('/auth/google/url');
+      const origin = window.location.origin;
+      const res = await api.get<{ url: string }>(`/auth/google/url?origin=${encodeURIComponent(origin)}`);
       if (res.data?.url) {
         return res.data.url;
       }
@@ -126,5 +127,21 @@ export const meetingService = {
   },
   delete: async (id: string): Promise<void> => {
     await api.delete(`/meetings/${id}`);
+  },
+  getOutputs: async (id: string) => {
+    const res = await api.get(`/meetings/${id}/outputs`);
+    return res.data;
+  },
+  processMeeting: async (id: string) => {
+    const res = await api.post(`/meetings/${id}/process`);
+    return res.data;
+  },
+  toggleActionItem: async (id: string, index: number) => {
+    const res = await api.patch(`/meetings/${id}/outputs/action-items/${index}`);
+    return res.data;
+  },
+  getTranscript: async (id: string) => {
+    const res = await api.get(`/meetings/${id}/transcript`);
+    return res.data;
   },
 };

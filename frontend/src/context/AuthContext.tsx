@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { authService } from '../services/api';
 import type { User } from '../types/meeting';
 
@@ -19,7 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('meetscribe_token'));
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const profile = await authService.getMe();
       setUser(profile);
@@ -31,17 +31,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (token) {
+    if (token && !user) {
       fetchProfile();
-    } else {
+    } else if (!token) {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [token, user, fetchProfile]);
 
-  const login = async (newToken: string) => {
+  const login = useCallback(async (newToken: string) => {
     localStorage.setItem('meetscribe_token', newToken);
     setToken(newToken);
     setIsLoading(true);
@@ -50,21 +50,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(profile);
     } catch (err) {
       console.error('Error fetching profile on login:', err);
+      localStorage.removeItem('meetscribe_token');
+      setToken(null);
+      setUser(null);
+      throw err;
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('meetscribe_token');
     setToken(null);
     setUser(null);
     window.location.href = '/login';
-  };
+  }, []);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     await fetchProfile();
-  };
+  }, [fetchProfile]);
 
   return (
     <AuthContext.Provider

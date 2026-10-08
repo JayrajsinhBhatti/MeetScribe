@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import Optional
 import uuid
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -21,13 +22,13 @@ if settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET:
         client_secret=settings.GOOGLE_CLIENT_SECRET,
         server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
         client_kwargs={
-            "scope": "openid email profile https://www.googleapis.com/auth/calendar.readonly"
+            "scope": "openid email profile https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly"
         },
     )
 
 
 @router.get("/google/url")
-async def get_google_auth_url():
+async def get_google_auth_url(origin: Optional[str] = Query(None)):
     """Returns the Google OAuth consent URL for frontend-initiated authorization."""
     if not settings.GOOGLE_CLIENT_ID:
         raise HTTPException(
@@ -36,20 +37,26 @@ async def get_google_auth_url():
         )
     
     redirect_uri = settings.GOOGLE_CALLBACK_URL
+    import urllib.parse
+    state_param = f"&state={urllib.parse.quote(origin)}" if origin else ""
     google_auth_url = (
         f"https://accounts.google.com/o/oauth2/v2/auth?"
         f"client_id={settings.GOOGLE_CLIENT_ID}&"
         f"redirect_uri={redirect_uri}&"
         f"response_type=code&"
-        f"scope=openid%20email%20profile%20https://www.googleapis.com/auth/calendar.readonly&"
+        f"scope=openid%20email%20profile%20https://www.googleapis.com/auth/calendar.events%20https://www.googleapis.com/auth/calendar.readonly&"
         f"access_type=offline&"
         f"prompt=consent"
+        f"{state_param}"
     )
     return {"url": google_auth_url}
 
 
 @router.get("/google/callback")
-async def google_callback(code: str = Query(...)):
+async def google_callback(
+    code: str = Query(...),
+    state: Optional[str] = Query(None),
+):
     """Handles OAuth 2.0 authorization code exchange and user persistence."""
     token_url = "https://oauth2.googleapis.com/token"
     user_info_url = "https://www.googleapis.com/oauth2/v3/userinfo"
@@ -124,21 +131,36 @@ async def google_callback(code: str = Query(...)):
     # 4. Generate application JWT token
     jwt_token = create_access_token(subject=user.userId)
 
-    # Detect active Vite dev server port (5174 or 5173)
+    # Determine target frontend client URL
     target_client = settings.CLIENT_URL
-    try:
-        import socket
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(0.15)
-            # If 5174 is listening and 5173 is not, redirect to 5174
-            if s.connect_ex(("127.0.0.1", 5174)) == 0 and s.connect_ex(("127.0.0.1", 5173)) != 0:
+    if state and (state.startswith("http://localhost:") or state.startswith("http://127.0.0.1:")):
+        target_client = state.rstrip("/")
+    else:
+        # Detect active Vite dev server port (5173 or 5174) with IPv4 & IPv6 support
+        try:
+            import socket
+            def check_port(port: int) -> bool:
+                for res in socket.getaddrinfo('localhost', port, socket.AF_UNSPEC, socket.SOCK_STREAM):
+                    af, socktype, proto, _, sa = res
+                    try:
+                        with socket.socket(af, socktype, proto) as s:
+                            s.settimeout(0.2)
+                            if s.connect_ex(sa) == 0:
+                                return True
+                    except Exception:
+                        pass
+                return False
+
+            if check_port(5173):
+                target_client = "http://localhost:5173"
+            elif check_port(5174):
                 target_client = "http://localhost:5174"
-    except Exception:
-        pass
+        except Exception:
+            pass
 
     # Redirect back to frontend with JWT token in query parameters
     redirect_target = f"{target_client}/auth/callback?token={jwt_token}"
-    return RedirectResponse(url=redirect_target)
+    return RedirectResponse(url=redirect_target, status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 
 
 @router.get("/me", response_model=UserResponse)
